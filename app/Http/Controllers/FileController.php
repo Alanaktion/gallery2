@@ -17,6 +17,7 @@ class FileController extends Controller
 
     public function proxy(string $file)
     {
+        // TODO: support HTTP range requests for video buffering
         $path = config('gallery.path') . $file;
         if (!is_file($path)) {
             return abort(404);
@@ -99,7 +100,7 @@ class FileController extends Controller
         if (!is_file($path)) {
             return abort(404);
         }
-        return view('video.show', [
+        return view('video', [
             'path' => $file,
             'mime' => mime_content_type($path),
         ]);

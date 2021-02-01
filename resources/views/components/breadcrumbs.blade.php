@@ -1,4 +1,4 @@
-<ol class="px-2 pt-2 flex">
+<ol class="px-2 pt-2 flex flex-wrap">
     <li class="flex items-center">
         @if ($dir)
             <a class="px-2 py-1 text-indigo-600 rounded-md hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" href="/">
@@ -28,11 +28,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
                 @if ($i != $lastIndex)
-                    <a class="px-2 py-1 text-indigo-600 rounded-md hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" href="/{{ $path }}">
+                    <a class="px-2 py-1 max-w-sm whitespace-nowrap overflow-hidden overflow-ellipsis text-indigo-600 rounded-md hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" href="/{{ $path }}">
                         {{ $fragment }}
                     </a>
                 @else
-                    <span class="px-2 py-1 text-gray-600 dark:text-gray-200">
+                    <span class="px-2 py-1 max-w-sm whitespace-nowrap overflow-hidden overflow-ellipsis text-gray-600 dark:text-gray-200">
                         {{ $fragment }}
                     </span>
                 @endif
