@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Constraint;
-use Intervention\Image\Facades\Image;
 
 class FileController extends Controller
 {
