@@ -93,46 +93,73 @@ class FileController extends Controller
             return abort(404);
         }
         $path = config('gallery.path') . $file;
-        $hash = sha1($file);
+        $hash = sha1($path);
 
-        $file = "$hash.jpg";
+        $thumbFile = "$hash.jpg";
         if ($scale > 1) {
-            $file = "$hash@{$scale}x.jpg";
+            $thumbFile = "$hash@{$scale}x.jpg";
         }
 
-        if (Storage::exists("thumbs/$file")) {
-            return response(Storage::get("thumbs/$file"), 200, [
+        if (Storage::exists("thumbs/$thumbFile")) {
+            return response(Storage::get("thumbs/$thumbFile"), 200, [
                 'Content-Type' => 'image/jpeg',
                 'Cache-Control' => 'max-age=31536000',
             ]);
         }
 
         $type = explode('/', mime_content_type($path), 2)[0];
+        $size = 192 * $scale;
         if ($type == 'video') {
-            $path = $this->videoImage($path);
+            $framePath = $this->videoImage($path);
+            $data = $this->makeThumb($framePath, $size);
+            unlink($framePath);
+        } else {
+            $data = $this->makeThumb($path, $size);
         }
 
-        $size = 192 * $scale;
-        $src = Image::make($path);
-        $w = $src->width();
-        $h = $src->height();
-        if ($w > $h) {
-            $width = null;
-            $height = $size;
-        } else {
-            $width = $size;
-            $height = null;
-        }
-        $thumb = $src->resize($width, $height, function (Constraint $constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        })->resizeCanvas($size, $size, 'center', false, '#000');
-        $data = $thumb->encode('jpg', 80);
-        Storage::put("thumbs/$file", $data);
+        Storage::put("thumbs/$thumbFile", $data);
         return response($data, 201, [
             'Content-Type' => 'image/jpeg',
             'Cache-Control' => 'max-age=31536000',
         ]);
+    }
+
+    protected function makeThumb(string $filePath, int $size): string
+    {
+        $img = @imagecreatefromstring(file_get_contents($filePath));
+        if (!$img) {
+            throw new \Exception('Unable to load source image for thumbnail creation.');
+        }
+
+        $res = imagecreatetruecolor($size, $size);
+        $w = imagecolorallocate($res, 64, 64, 64);
+        imagefill($res, 0, 0, $w);
+
+        // Get smaller of image's dimensions
+        $ix = imagesx($img);
+        $iy = imagesy($img);
+        $d = ($ix > $iy) ? $iy : $ix;
+
+        // Crop, resize, and copy from source image
+        imagecopyresampled(
+            $res,
+            $img,
+            0,
+            0,
+            floor(($ix - $d) / 2),
+            floor(($iy - $d) / 2),
+            $size,
+            $size,
+            $d,
+            $d
+        );
+        imagedestroy($img);
+
+        ob_start();
+        imagejpeg($res);
+        $data = ob_get_clean();
+        imagedestroy($res);
+        return $data;
     }
 
     public function videoImage(string $path)
@@ -148,9 +175,7 @@ class FileController extends Controller
         $seconds = $duration ? floor($duration * 0.30) : 10;
         exec("ffmpeg -ss $seconds -i $path -vframes 1 -vcodec png -an -y " . escapeshellarg($framePath));
 
-        $src = Image::make($framePath);
-        unlink($framePath);
-        return $src;
+        return $framePath;
     }
 
     public function video(string $file)
