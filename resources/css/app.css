@@ -1,0 +1,15 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
+@layer utilities {
+    @variants hover {
+        .bright {
+            filter: brightness(1.1);
+        }
+    }
+    .backdrop-blur {
+        backdrop-filter: blur(30px);
+    }
+}
