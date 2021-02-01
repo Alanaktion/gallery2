@@ -2,14 +2,50 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+@layer components {
+    img {
+        width: 100%;
+    }
+}
 
 @layer utilities {
-    @variants hover {
+    @variants hover, group-hover {
         .bright {
             filter: brightness(1.1);
         }
     }
     .backdrop-blur {
         backdrop-filter: blur(30px);
+    }
+    .ratio {
+        position: relative;
+        width: 100%;
+    }
+    .ratio::before {
+        display: block;
+        padding-top: var(--aspect-ratio);
+        content: "";
+    }
+    .ratio > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .ratio-1x1 {
+        --aspect-ratio: 100%;
+    }
+    .ratio-4x3 {
+        --aspect-ratio: calc(3 / 4 * 100%);
+    }
+    .ratio-16x9 {
+        --aspect-ratio: calc(9 / 16 * 100%);
+    }
+}
+
+@responsive {
+    .grid-cols-img {
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 12rem));
     }
 }

@@ -22,6 +22,15 @@ class FileController extends Controller
             return abort(404);
         }
 
+        $mime = mime_content_type($path);
+        header('Content-Type: ' . $mime);
+
+        $type = substr($mime, 0, strpos($mime, '/'));
+        if ($type == 'image') {
+            readfile($path);
+            return;
+        }
+
         // https://gist.github.com/codler/3906826
         $fp = @fopen($path, 'rb');
         $size = filesize($path);
@@ -29,8 +38,6 @@ class FileController extends Controller
         $start = 0;
         $end = $size - 1;
 
-        $mime = mime_content_type($path);
-        header('Content-Type: ' . $mime);
         header('Accept-Range: bytes');
 
         if (isset($_SERVER['HTTP_RANGE'])) {

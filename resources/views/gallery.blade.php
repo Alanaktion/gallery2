@@ -9,12 +9,10 @@
     </div>
 
     {{-- File thumbnails --}}
-    <div class="pl-3 flex flex-wrap">
+    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-img gap-px sm:gap-1 md:gap-2 sm:mx-3">
         @foreach($items['files'] as $file)
-            @if ($file['type'] == 'image')
-                <x-image-link :dir="$dir" :file="$file" />
-            @elseif ($file['type'] == 'video')
-                <x-video-link :dir="$dir" :file="$file" />
+            @if ($file['type'] == 'image' || $file['type'] == 'video')
+                <x-image-link :dir="$dir" :file="$file" :type="$file['type']" />
             @endif
         @endforeach
     </div>
