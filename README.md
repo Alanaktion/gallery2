@@ -7,9 +7,10 @@ An overkill implementation of an automated image gallery. Based on my single-fil
 1. Clone the repository
 2. `composer install`
 3. `cp .env.example .env`
-4. Set the path to your images in the filesystem as `GALLERY_PATH` in `.env`
-5. `npm ci && npm run prod`
-6. Point your web server to the `public/` directory
+4. `php artisan key:generate`
+5. Set the path to your images in the filesystem as `GALLERY_PATH` in `.env`
+6. `npm ci && npm run prod`
+7. Point your web server to the `public/` directory
 
 ### Authentication
 
