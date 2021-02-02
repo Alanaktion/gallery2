@@ -3,7 +3,7 @@
     $path = $dir ? $dir . '/' . $file['name'] : $file['name'];
     $encoded = implode('/', array_map('rawurlencode', explode('/', $path)));
     @endphp
-    <a class="relative group" href="/{{ $type == 'video' ? 'video' : 'src' }}/{{ $path }}">
+    <a class="relative group" href="/{{ $type == 'video' ? 'video' : 'src' }}/{{ $encoded }}">
         <img class="group-hover:bright sm:rounded-sm"
             src="/thumbnail@1x/{{ $encoded }}"
             srcset="/thumbnail@2x/{{ $encoded }} 2x, /thumbnail@3x/{{ $encoded }} 3x"
