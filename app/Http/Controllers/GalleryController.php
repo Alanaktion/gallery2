@@ -15,6 +15,11 @@ class GalleryController extends Controller
     {
         $path = config('gallery.path') . $dir;
         if (!is_dir($path)) {
+            if ($dir === null) {
+                return response()->view('errors.config', [
+                    'message' => 'Your GALLERY_PATH setting is invalid, check your .env file!',
+                ], 200);
+            }
             return abort(404);
         }
         $items = $this->readDir($path);
