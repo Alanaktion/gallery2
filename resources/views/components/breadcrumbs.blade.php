@@ -19,9 +19,9 @@
             @php
             $path = '';
             for ($j = 0; $j < $i; $j++) {
-                $path .= $fragments[$j] . '/';
+                $path .= rawurlencode($fragments[$j]) . '/';
             }
-            $path .= $fragment;
+            $path .= rawurlencode($fragment);
             @endphp
             <li class="flex items-center">
                 <svg class="inline-block w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
