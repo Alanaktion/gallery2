@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities';
 
 @layer components {
-    img {
+    a img {
         width: 100%;
     }
 }
