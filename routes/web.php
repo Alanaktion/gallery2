@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PreviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +21,9 @@ require __DIR__ . '/auth.php';
 Route::get('/src/{file}', [FileController::class, 'proxy'])
     ->where('file', '.*');
 
-Route::get('/video/{file}', [FileController::class, 'video'])
+Route::get('/video/{file}', [PreviewController::class, 'video'])
+    ->where('file', '.*');
+Route::get('/view/{file}', [PreviewController::class, 'view'])
     ->where('file', '.*');
 
 Route::get('/thumbnail@{scale}x/{file}', [FileController::class, 'thumbnail'])

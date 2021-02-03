@@ -175,16 +175,4 @@ class FileController extends Controller
 
         return $framePath;
     }
-
-    public function video(string $file)
-    {
-        $path = config('gallery.path') . $file;
-        if (!is_file($path)) {
-            return abort(404);
-        }
-        return view('video', [
-            'path' => $file,
-            'mime' => mime_content_type($path),
-        ]);
-    }
 }
