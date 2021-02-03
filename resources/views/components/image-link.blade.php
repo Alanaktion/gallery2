@@ -8,6 +8,7 @@
             src="/thumbnail@1x/{{ $encoded }}"
             srcset="/thumbnail@2x/{{ $encoded }} 2x, /thumbnail@3x/{{ $encoded }} 3x"
             alt="{{ $file['name'] }}"
+            onerror="this.src='{{ asset('img/thumbnail-error.svg') }}'"
             loading="lazy">
         <div class="p-1 absolute bottom-0 left-0 right-0 text-sm bg-white bg-opacity-75 backdrop-blur dark:bg-black opacity-0 group-hover:opacity-100 overflow-hidden overflow-ellipsis whitespace-nowrap z-10">
             {{ $file['name'] }}
