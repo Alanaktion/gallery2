@@ -26,6 +26,7 @@ class GalleryController extends Controller
         return view('gallery', [
             'dir' => $dir,
             'items' => $items,
+            'title' => $dir ? basename($dir) . ' - ' . config('app.name', 'Gallery') : null,
         ]);
     }
 

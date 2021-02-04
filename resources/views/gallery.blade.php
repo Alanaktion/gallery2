@@ -1,4 +1,4 @@
-<x-gallery-layout>
+<x-gallery-layout :title="$title">
     <x-breadcrumbs :dir="$dir" />
 
     {{-- Directories --}}
