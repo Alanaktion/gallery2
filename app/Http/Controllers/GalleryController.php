@@ -56,8 +56,8 @@ class GalleryController extends Controller
         }
 
         // Sort contents
-        usort($files, fn($a, $b) => $a['name'] <=> $b['name']);
-        usort($directories, fn($a, $b) => $a['name'] <=> $b['name']);
+        usort($files, fn($a, $b) => strnatcmp($a['name'], $b['name']));
+        usort($directories, fn($a, $b) => strnatcmp($a['name'], $b['name']));
 
         return [
             'files' => $files,
