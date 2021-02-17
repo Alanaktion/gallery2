@@ -8,6 +8,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class GenerateThumbnails extends Command
 {
@@ -19,9 +21,10 @@ class GenerateThumbnails extends Command
      * @var string
      */
     protected $signature = 'thumbs:generate
-        {path* : Directories to generate thumbnails for}
-        {--scale=* : The scale to generate thumbnails at (1-3)}
-        {--video : Generate video thumbnails with ffmpeg}';
+        {path?* : Directories to generate thumbnails for}
+        {--s|scale=* : The scale to generate thumbnails at (1-3)}
+        {--d|video : Generate video thumbnails with ffmpeg}
+        {--r|recursive : Read directories recursively}';
 
     /**
      * The console command description.
@@ -54,7 +57,7 @@ class GenerateThumbnails extends Command
         $errors = [];
         foreach ($paths as $path) {
             $this->info($path);
-            $files = $this->getDirFiles($path);
+            $files = $this->getDirFiles($path, $this->option('recursive'));
             $this->withProgressBar($files, function ($file) use ($scales) {
                 try {
                     if ($file['type'] == 'video' && $this->option('video')) {
@@ -83,29 +86,47 @@ class GenerateThumbnails extends Command
         return 0;
     }
 
-    protected function getDirFiles(string $dir): array
+    protected function getDirFiles(string $dir, bool $recursive = false): array
     {
-        $dh = dir($dir);
+        $paths = [];
+        if ($recursive) {
+            $rii = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
+                    $dir,
+                    RecursiveDirectoryIterator::FOLLOW_SYMLINKS
+                ),
+                RecursiveIteratorIterator::SELF_FIRST,
+                RecursiveIteratorIterator::CATCH_GET_CHILD
+            );
+            foreach ($rii as $file) {
+                /** @var \SplFileInfo $file */
+                if ($file->isDir()) {
+                    continue;
+                }
+                $paths[] = $file->getRealPath();
+            }
+        } else {
+            $dh = dir($dir);
+            while (($item = $dh->read()) !== false) {
+                if (!is_dir($dh->path . '/' . $item)) {
+                    $paths[] = realpath($dh->path . '/' . $item);
+                }
+            }
+            $dh->close();
+        }
+
         $files = [];
-        $directories = [];
-        while (($item = $dh->read()) !== false) {
-            if ($item == '.' || $item == '..') {
+        foreach ($paths as $path) {
+            if ($path === false) {
                 continue;
             }
-            if (is_dir($dh->path . '/' . $item)) {
-                $directories[] = [
-                    'name' => $item,
-                ];
-            } else {
-                $absolute = realpath($dh->path . '/' . $item);
-                $mime = mime_content_type($absolute);
-                $files[] = [
-                    'name' => $item,
-                    'path' => $absolute,
-                    'type' => explode('/', $mime, 2)[0],
-                ];
-            }
+            $mime = mime_content_type($path);
+            $files[] = [
+                'path' => $path,
+                'type' => explode('/', $mime, 2)[0],
+            ];
         }
+
         return $files;
     }
 
