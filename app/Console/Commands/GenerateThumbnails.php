@@ -39,16 +39,16 @@ class GenerateThumbnails extends Command
     {
         $paths = $this->argument('path');
         if ($paths) {
-            array_walk($paths, fn($p) => realpath(config('gallery.path') . Str::start($p, '/')));
+            $paths = array_map(fn($p) => realpath(config('gallery.path') . Str::start($p, '/')), $paths);
         } else {
             $paths = [realpath(config('gallery.path'))];
         }
 
-        Validator::make(['scales' => $this->option('scales')], [
-            'scales' => 'nullable|array',
-            'scales.*' => 'int|in:1,2,3',
+        Validator::make(['scale' => $this->option('scale')], [
+            'scale' => 'nullable|array',
+            'scale.*' => 'int|in:1,2,3',
         ])->validate();
-        $scales = $this->option('scales') ?: [1, 2];
+        $scales = $this->option('scale') ?: [1, 2];
 
         /** @var Exception[] */
         $errors = [];
