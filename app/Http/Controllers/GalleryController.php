@@ -60,19 +60,16 @@ class GalleryController extends Controller
             if (!$includeHidden && $item[0] == '.') {
                 continue;
             }
-            if (is_dir($dh->path . '/' . $item)) {
+            $path = $dh->path . '/' . $item;
+            if (is_dir($path)) {
                 $directories[] = [
                     'name' => $item,
                 ];
-            } else {
-                $absolute = realpath($dh->path . '/' . $item);
-                if ($absolute === false) {
-                    continue;
-                }
-                $mime = mime_content_type($absolute);
+            } elseif (is_file($path)) {
+                $mime = mime_content_type($path);
                 $files[] = [
                     'name' => $item,
-                    'size' => filesize($absolute),
+                    'size' => filesize($path),
                     'mimeType' => $mime,
                     'type' => explode('/', $mime, 2)[0],
                 ];
