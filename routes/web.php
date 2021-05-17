@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 
+Route::get('/', [GalleryController::class, 'app']);
+Route::get('/dir', [GalleryController::class, 'dir']);
+
 Route::get('/src/{file}', [FileController::class, 'proxy'])
     ->where('file', '.*');
 
@@ -26,7 +29,3 @@ Route::get('/video/{file}', [FileController::class, 'video'])
 Route::get('/thumbnail@{scale}x/{file}', [FileController::class, 'thumbnail'])
     ->whereNumber('scale')
     ->where('file', '.*');
-
-Route::get('/', [GalleryController::class, 'index']);
-Route::get('/{dir}', [GalleryController::class, 'index'])
-    ->where('dir', '.*');

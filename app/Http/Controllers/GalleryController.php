@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 class GalleryController extends Controller
 {
     public function __construct()
@@ -11,11 +13,27 @@ class GalleryController extends Controller
         }
     }
 
-    public function index(?string $dir = null)
+    public function app()
     {
-        $path = config('gallery.path') . $dir;
+        return view('app');
+    }
+
+    public function dir(Request $request)
+    {
+        $dir = $request->input('dir');
+        $base = config('gallery.path');
+        $path = $base . $dir;
+
+        $real = realpath($path);
+        if (strpos($real, rtrim($base, '/')) !== 0) {
+            return abort(404, 'Invalid directory requested.');
+        }
+
         if (!is_dir($path)) {
             if ($dir === null) {
+                if ($request->expectsJson()) {
+                    return abort(500, 'Your GALLERY_PATH setting is invalid, check your .env file!');
+                }
                 return response()->view('errors.config', [
                     'message' => 'Your GALLERY_PATH setting is invalid, check your .env file!',
                 ], 200);
@@ -23,14 +41,14 @@ class GalleryController extends Controller
             return abort(404);
         }
         $items = $this->readDir($path);
-        return view('gallery', [
+        return [
             'dir' => $dir,
             'items' => $items,
-            'title' => $dir ? basename($dir) . ' - ' . config('app.name', 'Gallery') : null,
-        ]);
+            'title' => $dir ? basename($dir) : null,
+        ];
     }
 
-    protected function readDir(string $dir)
+    protected function readDir(string $dir, bool $includeHidden = false)
     {
         $dh = dir($dir);
         $files = [];
@@ -39,12 +57,18 @@ class GalleryController extends Controller
             if ($item == '.' || $item == '..') {
                 continue;
             }
+            if (!$includeHidden && $item[0] == '.') {
+                continue;
+            }
             if (is_dir($dh->path . '/' . $item)) {
                 $directories[] = [
                     'name' => $item,
                 ];
             } else {
                 $absolute = realpath($dh->path . '/' . $item);
+                if ($absolute === false) {
+                    continue;
+                }
                 $mime = mime_content_type($absolute);
                 $files[] = [
                     'name' => $item,
