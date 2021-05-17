@@ -54,20 +54,29 @@ export default {
         const items = ref(null);
         const loading = ref(false);
 
+        const CancelToken = axios.CancelToken;
+        let cancel;
+
         watch(
             () => route.query.path,
             async val => {
                 path.value = val;
                 loading.value = true;
+                if (cancel) {
+                    cancel('Navigated away from the directory');
+                }
                 try {
                     const response = await axios.get('/dir', {
                         params: {
                             dir: val,
                         },
+                        cancelToken: new CancelToken(c => cancel = c),
                     });
                     items.value = response.data.items;
                 } catch (e) {
-                    console.error('An error occurred loading the directory.');
+                    if (!e.__CANCEL__) {
+                        console.error('An error occurred loading the directory.');
+                    }
                 }
                 loading.value = false;
             },
