@@ -6,8 +6,8 @@
         >
             <img
                 class="group-hover:bright sm:rounded-sm"
-                :src="`/thumbnail@1x/${encoded}`"
-                :srcset="`/thumbnail@2x/${encoded} 2x, /thumbnail@3x/${encoded} 3x`"
+                :src="error ? '/img/thumbnail-error.svg' : `/thumbnail@1x/${encoded}`"
+                :srcset="error ? false : `/thumbnail@2x/${encoded} 2x, /thumbnail@3x/${encoded} 3x`"
                 :alt="name"
                 ref="img"
                 loading="lazy"
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref, toRefs } from 'vue';
+import { computed, onMounted, ref, toRefs, watch } from 'vue';
 
 export default {
     props: {
@@ -39,6 +39,7 @@ export default {
     },
     setup(props) {
         const { dir, name, type } = toRefs(props);
+        const error = ref(false);
 
         // Compute encoded file path
         const encoded = computed(() => {
@@ -46,13 +47,21 @@ export default {
             return path.split('/').map(p => encodeURI(p)).join('/');
         });
 
+        watch(
+            name,
+            (val) => {
+                if (val) {
+                    error.value = false;
+                }
+            },
+        );
+
         // Show error images on failed loads
         const img = ref(null)
         onMounted(() => {
             if (img.value) {
                 img.value.addEventListener('error', () => {
-                    // TODO: find a clean way of setting this in the data model
-                    // img.value.setAttribute('src', '/img/thumbnail-error.svg');
+                    error.value = true;
                 });
             }
         });
