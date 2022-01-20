@@ -4,9 +4,13 @@
 
         <div
             v-if="loading"
-            class="py-6 mx-3"
+            class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-img gap-px sm:gap-1 md:gap-2 sm:mx-3 sm:mb-3"
         >
-            Loading directory&hellip;
+            <div class="ratio ratio-1x1 sm:rounded-sm sm:shadow animate-pulse bg-gray-200 dark:bg-gray-700">
+                <span class="sr-only">Loading directory&hellip;</span>
+            </div>
+            <div class="ratio ratio-1x1 sm:rounded-sm sm:shadow animate-pulse bg-gray-100 dark:bg-gray-800"></div>
+            <div class="ratio ratio-1x1 sm:rounded-sm sm:shadow animate-pulse bg-gray-50 dark:bg-gray-800/50"></div>
         </div>
 
         <template v-else-if="items">
@@ -19,7 +23,16 @@
                 />
             </div>
 
-            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-img gap-px sm:gap-1 md:gap-2 sm:mx-3 sm:mb-3">
+            <div
+                v-if="!hasItems"
+                class="text-center py-8 md:py-12"
+            >
+                <h2 class="text-lg font-medium text-gray-500">No items found</h2>
+            </div>
+            <div
+                v-else
+                class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-img gap-px sm:gap-1 md:gap-2 sm:mx-3 sm:mb-3"
+            >
                 <template v-for="file in items.files" :key="file">
                     <ImageLink
                         v-if="file.type === 'image' || file.type === 'video'"
@@ -53,6 +66,7 @@ export default {
         const path = ref(route.query.path);
         const items = ref(null);
         const loading = ref(false);
+        const hasItems = ref(false);
 
         const CancelToken = axios.CancelToken;
         let cancel;
@@ -66,6 +80,7 @@ export default {
                     cancel('Navigated away from the directory');
                 }
                 try {
+                    hasItems.value = false;
                     const response = await axios.get('/dir', {
                         params: {
                             dir: val,
@@ -73,6 +88,11 @@ export default {
                         cancelToken: new CancelToken(c => cancel = c),
                     });
                     items.value = response.data.items;
+                    items.value.files.forEach(file => {
+                        if (file.type === 'image' || file.type === 'video') {
+                            hasItems.value = true;
+                        }
+                    });
                 } catch (e) {
                     if (!e.__CANCEL__) {
                         console.error('An error occurred loading the directory.');
@@ -87,6 +107,7 @@ export default {
             path,
             items,
             loading,
+            hasItems,
         };
     },
 };
