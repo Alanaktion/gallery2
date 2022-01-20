@@ -1,18 +1,19 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer components {
     a img {
         width: 100%;
     }
+    .grid-cols-img {
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 12rem));
+    }
 }
 
 @layer utilities {
-    @variants hover, group-hover {
-        .bright {
-            filter: brightness(1.1);
-        }
+    .bright {
+        filter: brightness(1.1);
     }
     .backdrop-blur {
         backdrop-filter: blur(30px);
@@ -41,11 +42,5 @@
     }
     .ratio-16x9 {
         --aspect-ratio: calc(9 / 16 * 100%);
-    }
-}
-
-@responsive {
-    .grid-cols-img {
-        grid-template-columns: repeat(auto-fit, minmax(8rem, 12rem));
     }
 }

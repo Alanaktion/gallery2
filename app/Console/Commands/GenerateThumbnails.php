@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Traits\MakesThumbnails;
+use App\Traits\MimeTypes;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +15,7 @@ use RecursiveIteratorIterator;
 class GenerateThumbnails extends Command
 {
     use MakesThumbnails;
+    use MimeTypes;
 
     /**
      * The name and signature of the console command.
@@ -120,7 +122,7 @@ class GenerateThumbnails extends Command
             if ($path === false) {
                 continue;
             }
-            $mime = mime_content_type($path);
+            $mime = $this->getMimeTypeFromExtension($path);
             $files[] = [
                 'path' => $path,
                 'type' => explode('/', $mime, 2)[0],

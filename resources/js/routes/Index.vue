@@ -19,7 +19,7 @@
                 />
             </div>
 
-            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-img gap-px sm:gap-1 md:gap-2 sm:mx-3">
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-img gap-px sm:gap-1 md:gap-2 sm:mx-3 sm:mb-3">
                 <template v-for="file in items.files" :key="file">
                     <ImageLink
                         v-if="file.type === 'image' || file.type === 'video'"

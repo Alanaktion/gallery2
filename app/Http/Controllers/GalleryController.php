@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\MimeTypes;
 use Illuminate\Http\Request;
 
 class GalleryController extends Controller
 {
+    use MimeTypes;
+
     public function __construct()
     {
         if (config('gallery.auth')) {
@@ -66,7 +69,7 @@ class GalleryController extends Controller
                     'name' => $item,
                 ];
             } elseif (is_file($path)) {
-                $mime = mime_content_type($path);
+                $mime = $this->getMimeTypeFromExtension($path);
                 $files[] = [
                     'name' => $item,
                     'size' => filesize($path),
