@@ -12,7 +12,8 @@ class ClearThumbnails extends Command
      *
      * @var string
      */
-    protected $signature = 'thumbnails:clear';
+    protected $signature = 'thumbs:clear
+        {-f|--force : Force deletion of all thumbnails}';
 
     /**
      * The console command description.
@@ -28,7 +29,10 @@ class ClearThumbnails extends Command
      */
     public function handle()
     {
-        Storage::deleteDirectory('thumbs');
+        if ($this->option('force') || $this->confirm('Are you sure you want to remove all generated thumbnails?')) {
+            Storage::deleteDirectory('thumbs');
+            $this->info('Thumbnails cleared.');
+        }
         return 0;
     }
 }
