@@ -7,11 +7,7 @@
 
     <title>{{ $title ?? config('app.name', 'Gallery') }}</title>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased dark:bg-gray-900 dark:text-gray-50">
     <div id="app">
